@@ -1,23 +1,22 @@
 from fastapi import APIRouter, Request
 
-from resolve.browser.browser import open_browser
+from resolve.browser.browser import fetch_page_content as page_content
 from resolve.browser.schema import BrowserSchema
 
 router = APIRouter()
 
 
-def getBrowser(request: Request):
+def get_browser(request: Request):
     return request.app.state.browser
 
 
 @router.get("/check-browser")
 async def check_browser(request: Request):
-    browser = getBrowser(request)
+    browser = get_browser(request)
     return {"connected": browser.is_connected()}
 
 
-@router.post("/browser")
-async def open_browser_route(data: BrowserSchema, request: Request):
-    browser = getBrowser(request)
-
-    return await open_browser(data, browser)
+@router.post("/pages/content")
+async def get_page_content(data: BrowserSchema, request: Request):
+    browser = get_browser(request)
+    return await page_content(data, browser)
